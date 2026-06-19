@@ -6,6 +6,8 @@
   <title>SPOT Tracker</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.js"></script>
+  <script src="https://unpkg.com/proj4leaflet@1.0.2/src/proj4leaflet.js"></script>
   <style>
     html, body { height: 100%; margin: 0; padding: 0; }
     #map { height: 100%; width: 100%; }
@@ -15,32 +17,64 @@
   <div id="map"></div>
   <script>
 
-  var OS_API_KEY = 'lfIctO22BunGnfxDp0hLcHdnoYxHnctQ';
+    var OS_API_KEY = 'lfIctO22BunGnfxDp0hLcHdnoYxHnctQ';
 
-function osTile(style) {
-  return L.tileLayer(
-    'https://api.os.uk/maps/raster/v1/zxy/' + style + '/{z}/{x}/{y}.png?key=' + OS_API_KEY,
-    {
-      attribution: '© Crown copyright and database rights 2024 Ordnance Survey',
-      maxZoom: 20,
-      minZoom: 5
+    // --- Standard Web Mercator layers (existing) ---
+    function osTile3857(style) {
+      return L.tileLayer(
+        'https://api.os.uk/maps/raster/v1/zxy/Leisure_27700/{z}/{x}/{y}.png?key=' + OS_API_KEY,
+        {
+          attribution: '© Crown copyright and database rights 2024 Ordnance Survey',
+          maxZoom: 20,
+          minZoom: 7
+        }
+      );
     }
-  );
-}
 
-var outdoor = osTile('Outdoor_3857');
-var road    = osTile('Road_3857');
-var light   = osTile('Light_3857');
-var leisure = osTile('Leisure_27700');
+    var outdoor = osTile3857('Outdoor_3857');
+    var road    = osTile3857('Road_3857');
+    var light   = osTile3857('Light_3857');
 
-var map = L.map('map', { layers: [outdoor] }).setView([51.74, 0.02], 12);
+    // --- Leisure layer (British National Grid / EPSG:27700) ---
+    var crs27700 = new L.Proj.CRS(
+      'EPSG:27700',
+      '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs',
+      {
+        resolutions: [896, 448, 224, 112, 56, 28, 14, 7, 3.5, 1.75],
+        origin: [-238375, 1376256]
+      }
+    );
 
-L.control.layers({
-  'Outdoor': outdoor,
-  'Road':    road,
-  'Light':   light,
-  'Leisure': Leisure
-}).addTo(map);
+    var leisureLayer = L.tileLayer(
+      'https://api.os.uk/maps/raster/v1/zxy/Leisure_27700/{z}/{x}/{y}.png?key=' + OS_API_KEY,
+      {
+        attribution: '© Crown copyright and database rights 2024 Ordnance Survey',
+        maxZoom: 9,
+        minZoom: 0
+      }
+    );
+
+    // --- Start map in Web Mercator with Outdoor layer ---
+    var map = L.map('map', { layers: [outdoor] }).setView([51.70, 0.30], 12);
+
+    // --- Layer switcher ---
+    L.control.layers({
+      'Outdoor (Explorer-style)': outdoor,
+      'Road (Landranger-style)':  road,
+      'Light':                    light,
+      'Leisure (closest to printed OS)': leisureLayer
+    }).addTo(map);
+
+    // --- Swap CRS when switching to/from Leisure ---
+    map.on('baselayerchange', function(e) {
+      if (e.name === 'Leisure (closest to printed OS)') {
+        map.options.crs = crs27700;
+        map.setView(map.getCenter(), 6);
+      } else {
+        map.options.crs = L.CRS.EPSG3857;
+        map.setView(map.getCenter(), map.getZoom());
+      }
+    });
 
   </script>
 </body>
