@@ -15,30 +15,30 @@
   <div id="map"></div>
   <script>
 
-    var OS_API_KEY = 'lfIctO22BunGnfxDp0hLcHdnoYxHnctQ';
+  var OS_API_KEY = 'lfIctO22BunGnfxDp0hLcHdnoYxHnctQ';
 
 function osTile(style) {
   return L.tileLayer(
-    'https://api.os.uk/maps/raster/v1/zxy/'Road_27700'/{z}/{x}/{y}.png?key=' + OS_API_KEY,
+    'https://api.os.uk/maps/raster/v1/zxy/' + style + '/{z}/{x}/{y}.png?key=' + OS_API_KEY,
     {
       attribution: '© Crown copyright and database rights 2024 Ordnance Survey',
       maxZoom: 20,
       minZoom: 7
-        }
-      );
     }
+  );
+}
 
-    var outdoor = osTile('Outdoor_3857');
-    var road    = osTile('Road_3857');
-    var light   = osTile('Light_3857');
+var outdoor = osTile('Outdoor_3857');
+var road    = osTile('Road_3857');
+var light   = osTile('Light_3857');
 
-    var map = L.map('map', { layers: [outdoor] }).setView([51.70, 0.30], 12);
+var map = L.map('map', { layers: [outdoor] }).setView([51.70, 0.30], 12);
 
-    L.control.layers({
-      'Outdoor': outdoor,
-      'Road':    road,
-      'Light':   light
-    }).addTo(map);
+L.control.layers({
+  'Outdoor': outdoor,
+  'Road':    road,
+  'Light':   light
+}).addTo(map);
 
   </script>
 </body>
