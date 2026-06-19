@@ -23,7 +23,7 @@ function osTile(style) {
     {
       attribution: '© Crown copyright and database rights 2024 Ordnance Survey',
       maxZoom: 20,
-      minZoom: 7
+      minZoom: 5
     }
   );
 }
@@ -31,8 +31,9 @@ function osTile(style) {
 var outdoor = osTile('Outdoor_3857');
 var road    = osTile('Road_3857');
 var light   = osTile('Light_3857');
+var leisure = osTile('Leisure_27700');
 
-var map = L.map('map', { layers: [outdoor] }).setView([51.70, 0.30], 12);
+var map = L.map('map', { layers: [outdoor] }).setView([51.74, 0.02], 12);
 
 L.control.layers({
   'Outdoor': outdoor,
