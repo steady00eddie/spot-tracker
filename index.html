@@ -17,13 +17,13 @@
 
     var OS_API_KEY = 'lfIctO22BunGnfxDp0hLcHdnoYxHnctQ';
 
-    function osTile(style) {
-      return L.tileLayer(
-        'https://api.os.uk/maps/raster/v1/zxy/Road_27700/{z}/{x}/{y}.png?key=lfIctO22BunGnfxDp0hLcHdnoYxHnctQ',
-        {
-          attribution: '© Crown copyright and database rights 2024 Ordnance Survey',
-          maxZoom: 20,
-          minZoom: 7
+function osTile(style) {
+  return L.tileLayer(
+    'https://api.os.uk/maps/raster/v1/zxy/'Road_27700'/{z}/{x}/{y}.png?key=' + OS_API_KEY,
+    {
+      attribution: '© Crown copyright and database rights 2024 Ordnance Survey',
+      maxZoom: 20,
+      minZoom: 7
         }
       );
     }
